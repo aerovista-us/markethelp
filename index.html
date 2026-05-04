@@ -156,6 +156,15 @@
     }
     .modal-head{display:flex;justify-content:space-between;gap:16px;align-items:start}
     .modal h3{font-family:Georgia,serif;color:var(--brand);font-size:30px;margin:0}
+
+    .modal-brief{
+      display:grid;gap:10px;margin:14px 0;
+    }
+    .brief-box{
+      border:1px solid var(--line);background:#fffaf4;border-radius:16px;padding:12px;
+      color:var(--ink);line-height:1.45;
+    }
+    .brief-box strong{color:var(--brand)}
     .modal pre{
       white-space:pre-wrap;background:#f8f2eb;border:1px solid var(--line);
       padding:14px;border-radius:16px;color:var(--ink);line-height:1.45;
@@ -188,6 +197,10 @@
       display:none;z-index:60;
     }
     .copy-toast.show{display:block}
+
+    .mini-btn.disabled,.btn.disabled{opacity:.55;cursor:not-allowed;pointer-events:none}
+    .image-note{margin-top:12px;font-size:13px;color:var(--muted);line-height:1.45}
+    .code-chip{display:inline-block;background:var(--soft);border:1px solid var(--line);padding:4px 8px;border-radius:999px;font-size:12px;color:var(--brand);margin-top:6px}
     .mobile-note{display:none}
     @media(max-width:1050px){
       .app{grid-template-columns:1fr}
@@ -261,9 +274,9 @@
     <section id="dashboard" class="panel active section">
       <div class="grid cols-4">
         <div class="card">
-          <div class="stat"><div><div class="label">Ready Assets</div><div class="num">40</div></div><span class="pill good">PNG</span></div>
+          <div class="stat"><div><div class="label">Mapped Images</div><div class="num">20</div></div><span class="pill good">PNG</span></div>
           <div class="bar"><span style="width:100%"></span></div>
-          <p>20 square graphics and 20 story/reel versions were created for the campaign.</p>
+          <p>20 existing graphics are mapped to the first 20 days. Days 21–30 are flagged as needing images.</p>
         </div>
         <div class="card">
           <div class="stat"><div><div class="label">Welcome Emails</div><div class="num">5</div></div><span class="pill good">HTML</span></div>
@@ -416,12 +429,15 @@
       <button class="close" onclick="closeModal()">×</button>
     </div>
     <p id="modalDesc"></p>
+    <div class="modal-brief" id="modalBrief"></div>
     <pre id="modalCaption"></pre>
     <div class="hero-actions">
       <button class="btn primary" onclick="copyModalCaption()">Copy Caption</button>
+      <button class="btn" id="modalImageBtn" onclick="downloadPostImage()">Get Image</button>
       <button class="btn soft" onclick="markCurrentPosted()">Mark Posted</button>
       <button class="btn" onclick="markCurrentNext()">Mark Next</button>
     </div>
+    <p class="image-note">Image buttons use relative web paths. For local testing, keep images in <span class="code-chip">post-images/</span> next to this HTML file. For GitHub Pages, upload the same folder.</p>
   </div>
 </div>
 <div class="copy-toast" id="toast">Copied</div>
@@ -445,37 +461,522 @@ const emails = [
   {id:"email-5", title:"Email 5 — When you are ready for space to reset", timing:"+7 days", purpose:"Invite consultation, coaching, workshops, and retreats.", status:"HTML ready"},
 ];
 
+const imageBasePath = "post-images/"; // Recommended repo folder for social graphics.
+const imageCatalog = {
+  1:"01-you-are-not-broken.png",
+  2:"02-3-signs-you-are-in-an-emotional-loop.png",
+  3:"03-the-pause-is-where-your-power-starts.png",
+  4:"04-if-your-reaction-feels-bigger-than-the-moment.png",
+  5:"05-start-with-five-minutes.png",
+  6:"06-the-loop-once-protected-you.png",
+  7:"07-what-is-this-pattern-costing-you.png",
+  8:"08-peace-is-not-pretending-it-does-not-hurt.png",
+  9:"09-something-in-me-feels-activated.png",
+  10:"10-you-do-not-have-to-be-in-crisis-to-ask-for-support.png",
+  11:"11-self-trust-returns-through-honest-next-steps.png",
+  12:"12-5-small-ways-to-rebuild-self-trust.png",
+  13:"13-you-can-be-kind-and-still-have-boundaries.png",
+  14:"14-before-you-say-yes-pause.png",
+  15:"15-one-honest-next-step-is-enough-for-today.png",
+  16:"16-the-next-step-does-not-have-to-be-dramatic.png",
+  17:"17-coaching-can-support.png",
+  18:"18-you-are-allowed-to-outgrow-survival-mode.png",
+  19:"19-insight-alone-may-not-be-enough.png",
+  20:"20-interrupt-the-loop.png"
+};
+
+function getImageInfo(day){
+  const file = imageCatalog[Number(day)];
+  if(!file) return {exists:false, file:null, url:null};
+  return {exists:true, file:file, url:imageBasePath + file};
+}
+
 const posts = [
-  {day:1, week:1, type:"Launch Post", title:"You are not broken. You are noticing a pattern.", desc:"Announce the free guide and introduce the emotional loop idea.", caption:"Sometimes we find ourselves in the same reaction again and again.\\n\\nThe same argument.\\nThe same shutdown.\\nThe same overthinking.\\nThe same emotional spiral.\\n\\nThat does not mean you are failing.\\n\\nIt may mean you are caught in a loop your body learned a long time ago.\\n\\nThat is why I created Interrupt the Loop, a free 5-minute guide to help you pause, notice what is happening, and choose one honest next step.\\n\\nStart here.\\n\\nCTA: Download the free guide: Interrupt the Loop."},
-  {day:2, week:1, type:"Carousel", title:"3 signs you are in an emotional loop", desc:"Educational post that teaches the audience how to recognize the loop.", caption:"An emotional loop can feel like truth because it is familiar.\\n\\nBut familiar does not always mean free.\\n\\nThe moment you notice the pattern, you create space for choice.\\n\\nThat space may be small at first.\\n\\nSmall still counts.\\n\\nCTA: Download the free guide: Interrupt the Loop."},
-  {day:3, week:1, type:"Story Post", title:"I do this work because…", desc:"Personal trust-building post for Cindy.", caption:"I do this work because I know how many people are carrying things quietly.\\n\\nThey are showing up.\\nTaking care of people.\\nKeeping things together.\\nSmiling when they are tired.\\nTrying to be okay.\\n\\nBut inside, they know something keeps repeating.\\n\\nMy work is about helping people slow down enough to hear themselves again.\\n\\nNot with shame.\\nNot with pressure.\\nWith honesty, support, and grounded tools.\\n\\nSometimes the next step is not dramatic.\\n\\nSometimes it is simply saying: I am ready to stop doing this the same way."},
-  {day:4, week:1, type:"Reel", title:"If your reaction feels bigger than the moment…", desc:"Short video teaching the protection question.", caption:"If your reaction feels bigger than the moment, it may not be too much.\\n\\nIt may be old protection showing up in a new situation.\\n\\nBefore you respond, explain, shut down, chase, or spiral, pause and ask:\\n\\nWhat am I trying to protect right now?\\n\\nThat question creates space.\\n\\nAnd space gives you a choice.\\n\\nCTA: Download the free guide: Interrupt the Loop."},
-  {day:5, week:1, type:"Direct CTA", title:"Start with five minutes.", desc:"Clear CTA post for the guide.", caption:"You do not have to figure everything out today.\\n\\nStart with five minutes.\\n\\nPause.\\nNotice.\\nName the loop.\\nChoose one honest next step.\\n\\nThat is where change begins.\\n\\nCTA: Download Interrupt the Loop today."},
-  {day:6, week:2, type:"Quote", title:"The loop once protected you.", desc:"Normalize protective patterns.", caption:"Many emotional patterns began as protection.\\n\\nStaying quiet may have protected you.\\nOver-explaining may have protected you.\\nPeople-pleasing may have protected you.\\nLeaving first may have protected you.\\n\\nBut sometimes the thing that helped us survive becomes the thing that keeps us stuck.\\n\\nNoticing that is not betrayal.\\n\\nIt is growth."},
-  {day:7, week:2, type:"Carousel", title:"What is this pattern costing you?", desc:"Reflection carousel with cost-based clarity.", caption:"A pattern does not have to destroy your life to deserve your attention.\\n\\nSometimes the cost is subtle.\\n\\nLess rest.\\nLess joy.\\nLess honesty.\\nLess room to breathe.\\n\\nYou are allowed to notice the cost before everything falls apart."},
-  {day:8, week:2, type:"Quote", title:"Peace is not pretending it does not hurt.", desc:"Clarity over comfort quote.", caption:"Sometimes we call it peace because the room got quiet.\\n\\nBut inside, something still feels unresolved.\\n\\nReal peace does not require abandoning yourself.\\n\\nIt asks for honesty.\\n\\nGently.\\nClearly.\\nOne step at a time."},
-  {day:9, week:2, type:"Reel", title:"A quick way to interrupt an emotional spiral.", desc:"10-second body reset.", caption:"When you feel yourself spiraling, try this.\\n\\nPut one hand on your chest or your stomach.\\n\\nTake one slower breath.\\n\\nThen say:\\n\\nSomething in me feels activated.\\n\\nThat language matters.\\n\\nYou are not saying, I am the problem.\\n\\nYou are saying, something is happening inside me.\\n\\nThat creates just enough space to choose your next step."},
-  {day:10, week:2, type:"Soft CTA", title:"You do not have to be in crisis to ask for support.", desc:"Move warm readers toward consultation.", caption:"Support is not only for crisis.\\n\\nSupport can be for the moment when you finally admit:\\n\\nI am tired of doing this the same way.\\n\\nIf the free guide brought something up for you, that may be worth exploring with support.\\n\\nCTA: Book a consultation when you are ready."},
-  {day:11, week:3, type:"Quote", title:"Self-trust returns through honest next steps.", desc:"Build self-trust pillar.", caption:"You may already know more than you think.\\n\\nThe hard part is often not knowing.\\n\\nIt is trusting what you know.\\n\\nThat trust returns slowly, through small honest choices.\\n\\nA pause.\\nA boundary.\\nA conversation.\\nA decision not to abandon yourself again."},
-  {day:12, week:3, type:"Carousel", title:"5 small ways to rebuild self-trust", desc:"Practical carousel.", caption:"Self-trust is not rebuilt through one big breakthrough.\\n\\nIt is rebuilt through repetition.\\n\\nSmall choices matter because they teach your body:\\n\\nI am listening now."},
-  {day:13, week:3, type:"Quote", title:"You can be kind and still have boundaries.", desc:"Boundary education.", caption:"A boundary does not have to be harsh to be real.\\n\\nYou do not have to explain it perfectly.\\nYou do not have to make everyone comfortable with it.\\nYou do not have to abandon it because someone reacts.\\n\\nKindness and self-abandonment are not the same thing."},
-  {day:14, week:3, type:"Reel", title:"Before you say yes, ask this.", desc:"Mini emotional fitness tool.", caption:"Before you say yes, pause and ask:\\n\\nAm I agreeing from truth, guilt, fear, or habit?\\n\\nThat question can tell you a lot.\\n\\nYou may still choose yes.\\n\\nBut now it is a choice.\\n\\nNot an automatic loop.\\n\\nThat is emotional fitness."},
-  {day:15, week:3, type:"Guide CTA", title:"The pause is where your power starts.", desc:"Repeat lead magnet CTA.", caption:"The pause may only last three seconds at first.\\n\\nThat still matters.\\n\\nA pause can interrupt the old response.\\nA pause can help you hear your body.\\nA pause can remind you that you have options.\\n\\nCTA: Download the free guide: Interrupt the Loop."},
-  {day:16, week:4, type:"Quote", title:"The next honest step does not have to be dramatic.", desc:"Reduce overwhelm and invite action.", caption:"Sometimes people wait for a dramatic moment before they change.\\n\\nBut many changes begin quietly.\\n\\nA different answer.\\nA slower breath.\\nA boundary.\\nA conversation.\\nA decision to stop pretending you are fine.\\n\\nSmall does not mean insignificant.\\n\\nSmall is often where the real work begins."},
-  {day:17, week:4, type:"Carousel", title:"What coaching with Cindy can support", desc:"Explain offers without pressure.", caption:"Coaching is not about being told who to become.\\n\\nIt is about having support while you reconnect with what is true, what is changing, and what needs your attention now.\\n\\nIf you are ready to look at the pattern with support, book a consultation."},
-  {day:18, week:4, type:"Quote", title:"You are allowed to outgrow survival mode.", desc:"Compassion plus change.", caption:"Survival patterns deserve compassion.\\n\\nThey helped you get through.\\n\\nBut you are allowed to ask:\\n\\nIs this still helping me?\\n\\nThat question can open the door to a different kind of life.\\n\\nNot overnight.\\nNot perfectly.\\nBut honestly."},
-  {day:19, week:4, type:"Reel", title:"One sign you may be ready for support.", desc:"Consultation bridge.", caption:"One sign you may be ready for support is when you keep saying:\\n\\nI know better, but I keep doing the same thing.\\n\\nThat does not mean you are weak.\\n\\nIt means insight alone may not be enough.\\n\\nSometimes you need support, reflection, tools, and space to practice a different response.\\n\\nThat is what coaching can help with."},
-  {day:20, week:4, type:"Consultation CTA", title:"Ready to stop doing this the same way?", desc:"Direct consultation CTA.", caption:"If you are tired of the same loop, the same reaction, the same emotional exhaustion, you do not have to sort it alone.\\n\\nA consultation is a simple place to begin.\\n\\nWe can look at what keeps repeating, what support may fit, and what your next honest step could be.\\n\\nCTA: Book a consultation with Cindy."},
-  {day:21, week:5, type:"Mini Campaign", title:"5 Minutes to Interrupt the Loop — Day 1: Pause", desc:"Start final conversion push.", caption:"For the next few posts, we are walking through a simple reset.\\n\\nToday’s step: pause.\\n\\nNot forever.\\n\\nJust long enough to notice:\\n\\nWhat is happening in me right now?\\n\\nThat pause is not weakness.\\n\\nIt is where choice begins."},
-  {day:22, week:5, type:"Mini Campaign", title:"Day 2: Name the Loop", desc:"Name the pattern.", caption:"Naming the loop gives you distance from it.\\n\\nTry this:\\n\\nI am in the over-explaining loop.\\nI am in the shutdown loop.\\nI am in the chasing loop.\\nI am in the resentment loop.\\n\\nYou are not becoming the label.\\n\\nYou are noticing the pattern.\\n\\nThat matters."},
-  {day:23, week:5, type:"Mini Campaign", title:"Day 3: What does your body know?", desc:"Body check prompt.", caption:"Your body often notices the loop before your mind can explain it.\\n\\nAsk:\\n\\nWhere do I feel this?\\n\\nChest?\\nStomach?\\nThroat?\\nShoulders?\\nJaw?\\n\\nYou do not have to fix it immediately.\\n\\nStart by listening."},
-  {day:24, week:5, type:"Mini Campaign", title:"Day 4: What am I trying to protect?", desc:"Protection question.", caption:"This question can soften shame:\\n\\nWhat am I trying to protect right now?\\n\\nMaybe your peace.\\nYour pride.\\nYour safety.\\nYour connection.\\nYour sense of control.\\n\\nOnce you know what you are protecting, you can choose a better way to care for it."},
-  {day:25, week:5, type:"Mini Campaign", title:"Day 5: Choose one honest next step.", desc:"Single action prompt.", caption:"Do not try to change your whole life in one moment.\\n\\nChoose one honest next step.\\n\\nSend the message.\\nTake the walk.\\nDo not reply yet.\\nSay the boundary.\\nAsk for support.\\nRest instead of spiraling.\\n\\nOne step counts."},
-  {day:26, week:5, type:"Lead Magnet Reminder", title:"Want the full 5-minute reset?", desc:"Drive guide downloads.", caption:"If these posts helped you slow down and notice the pattern, the free guide gives you a simple place to keep practicing.\\n\\nDownload Interrupt the Loop and use it the next time you feel pulled into the same reaction again."},
-  {day:27, week:5, type:"Trust Post", title:"I finally felt like I could hear myself again.", desc:"Testimonial placeholder.", caption:"This is the kind of shift the work is about.\\n\\nNot becoming perfect.\\n\\nNot pretending everything is fine.\\n\\nBut slowing down enough to hear what is true.\\n\\nIf you have felt disconnected from yourself, support can help you begin again."},
-  {day:28, week:5, type:"Retreat Soft Post", title:"Sometimes you need space to reset.", desc:"Introduce retreat angle.", caption:"A retreat is not running away.\\n\\nIt is creating enough space, quiet, and support to hear what your life has been trying to tell you.\\n\\nFor some people, that begins with a conversation.\\n\\nFor others, it begins with a guide.\\n\\nThere is no wrong starting point.\\n\\nJust start honestly."},
-  {day:29, week:5, type:"Authority Post", title:"This work is gentle. It is also honest.", desc:"Cindy voice lane.", caption:"My approach is not about pushing people into change before they are ready.\\n\\nBut it is also not about pretending the loop is not costing something.\\n\\nThe work is gentle.\\n\\nAnd honest.\\n\\nBecause both are needed.\\n\\nYou deserve support that respects your pace and tells the truth."},
-  {day:30, week:5, type:"Final CTA", title:"Interrupt the loop. Take the next honest step.", desc:"End of cycle CTA.", caption:"If you have been following along this month, maybe something has started to feel clearer.\\n\\nA pattern.\\nA cost.\\nA truth.\\nA next step.\\n\\nYou do not have to know the whole path.\\n\\nStart with the free guide.\\n\\nAnd when you are ready for support, book a consultation with Cindy."},
+  {
+    "day": 1,
+    "week": 1,
+    "type": "Launch Post",
+    "title": "You are not broken. You are noticing a pattern.",
+    "desc": "Announce the free guide and define the campaign promise.",
+    "graphic": "Headline: You are not broken. You are noticing a pattern. Body: Same reaction. Same spiral. Same shutdown. A pattern can be interrupted. CTA: Get the free guide.",
+    "caption": [
+      "Sometimes we find ourselves in the same reaction again and again.",
+      "The same argument. The same shutdown. The same overthinking. The same emotional spiral.",
+      "That does not mean you are failing. It may mean you are caught in a loop your body learned a long time ago.",
+      "That is why I created Interrupt the Loop, a free 5-minute guide to help you pause, notice what is happening, and choose one honest next step.",
+      "Start here.",
+      "CTA: Download the free guide: Interrupt the Loop."
+    ]
+  },
+  {
+    "day": 2,
+    "week": 1,
+    "type": "Carousel",
+    "title": "3 signs you are in an emotional loop",
+    "desc": "Educational post that teaches the audience how to recognize the loop.",
+    "graphic": "Use the 3 signs directly on the graphic: 1. Reaction feels bigger than the moment. 2. You know the pattern but still feel pulled in. 3. You replay it afterward and wish you responded differently.",
+    "caption": [
+      "3 signs you may be in an emotional loop:",
+      "1. Your reaction feels bigger than the moment. Something small happens, but your body responds like it is urgent, personal, or unsafe.",
+      "2. You already know the pattern, but still feel pulled into it. You can almost hear yourself thinking, “Here we go again,” but stopping still feels hard.",
+      "3. You replay it afterward and wish you had responded differently. The loop follows you into overthinking, guilt, frustration, or shutdown.",
+      "The first step is not judging yourself. The first step is noticing the pattern.",
+      "Awareness first. Then choice.",
+      "CTA: Download the free guide: Interrupt the Loop."
+    ]
+  },
+  {
+    "day": 3,
+    "week": 1,
+    "type": "Story Post",
+    "title": "What is an emotional loop?",
+    "desc": "Give a simple definition so the campaign has a clear educational foundation.",
+    "graphic": "Definition graphic: An emotional loop is a repeated reaction pattern that pulls you back into the same feeling, behavior, or story before you have time to choose differently.",
+    "caption": [
+      "An emotional loop is a repeated reaction pattern.",
+      "It can look like shutting down, over-explaining, people-pleasing, spiraling, snapping, chasing reassurance, or replaying the same moment in your mind.",
+      "The loop usually starts fast. Your body reacts before your mind has fully sorted out what is happening.",
+      "The goal is not to shame the reaction. The goal is to notice it soon enough to create space.",
+      "Space is where choice begins.",
+      "CTA: Start with the free guide: Interrupt the Loop."
+    ]
+  },
+  {
+    "day": 4,
+    "week": 1,
+    "type": "Reel",
+    "title": "If your reaction feels bigger than the moment…",
+    "desc": "Short video teaching the protection question.",
+    "graphic": "Reel overlay: If your reaction feels bigger than the moment, ask: What am I trying to protect right now?",
+    "caption": [
+      "If your reaction feels bigger than the moment, it may not be too much.",
+      "It may be old protection showing up in a new situation.",
+      "Before you respond, explain, shut down, chase, or spiral, pause and ask:",
+      "What am I trying to protect right now?",
+      "That question creates space. And space gives you a choice.",
+      "CTA: Download the free guide: Interrupt the Loop."
+    ]
+  },
+  {
+    "day": 5,
+    "week": 1,
+    "type": "Direct CTA",
+    "title": "Start with five minutes.",
+    "desc": "Clear CTA post for the guide with the exact steps.",
+    "graphic": "Simple 5-minute sequence: Pause. Notice. Name the loop. Choose one honest next step.",
+    "caption": [
+      "You do not have to figure everything out today.",
+      "Start with five minutes.",
+      "Pause. Notice. Name the loop. Choose one honest next step.",
+      "That is where change begins.",
+      "The free guide gives you a simple place to start when you feel pulled into the same reaction again.",
+      "CTA: Download Interrupt the Loop today."
+    ]
+  },
+  {
+    "day": 6,
+    "week": 2,
+    "type": "Quote",
+    "title": "The loop once protected you.",
+    "desc": "Normalize protective patterns while making the cost clear.",
+    "graphic": "Quote graphic: The loop once protected you. That does not mean it has to keep leading you.",
+    "caption": [
+      "Many emotional patterns began as protection.",
+      "Staying quiet may have protected you. Over-explaining may have protected you. People-pleasing may have protected you. Leaving first may have protected you.",
+      "But sometimes the thing that helped us survive becomes the thing that keeps us stuck.",
+      "Noticing that is not betrayal. It is growth.",
+      "CTA: Save this post and download Interrupt the Loop if this feels familiar."
+    ]
+  },
+  {
+    "day": 7,
+    "week": 2,
+    "type": "Carousel",
+    "title": "What is this pattern costing you?",
+    "desc": "Reflection carousel with cost-based clarity.",
+    "graphic": "Carousel prompts: What does this pattern cost you? Rest? Joy? Honesty? Energy? Connection? Peace?",
+    "caption": [
+      "A pattern does not have to destroy your life to deserve your attention.",
+      "Sometimes the cost is subtle.",
+      "Less rest. Less joy. Less honesty. Less room to breathe. Less connection with yourself.",
+      "Ask yourself: What does this pattern cost me when I repeat it?",
+      "You are allowed to notice the cost before everything falls apart.",
+      "CTA: Use the free guide to name the loop and choose one next step."
+    ]
+  },
+  {
+    "day": 8,
+    "week": 2,
+    "type": "Education",
+    "title": "Reacting vs. responding",
+    "desc": "Explain the difference with clear comparison bullets.",
+    "graphic": "Two-column graphic: Reacting = automatic, urgent, familiar, protective. Responding = paused, named, grounded, chosen.",
+    "caption": [
+      "Reacting and responding can look similar from the outside, but they feel very different inside.",
+      "Reacting is automatic. It often feels urgent, familiar, defensive, or bigger than the moment.",
+      "Responding includes a pause. It gives you enough space to name what is happening and choose what fits the truth of the moment.",
+      "You do not need to become perfectly calm. You need enough space to choose.",
+      "That is emotional fitness.",
+      "CTA: Download Interrupt the Loop for a simple 5-minute reset."
+    ]
+  },
+  {
+    "day": 9,
+    "week": 2,
+    "type": "Reel",
+    "title": "A quick way to interrupt an emotional spiral.",
+    "desc": "10-second body reset with words to say out loud.",
+    "graphic": "Reel overlay: Hand to chest. Slow breath. Say: Something in me feels activated.",
+    "caption": [
+      "When you feel yourself spiraling, try this:",
+      "Put one hand on your chest or your stomach. Take one slower breath.",
+      "Then say: Something in me feels activated.",
+      "That language matters.",
+      "You are not saying, I am the problem. You are saying, something is happening inside me.",
+      "That creates just enough space to choose your next step."
+    ]
+  },
+  {
+    "day": 10,
+    "week": 2,
+    "type": "Soft CTA",
+    "title": "You do not have to be in crisis to ask for support.",
+    "desc": "Move warm readers toward consultation.",
+    "graphic": "CTA graphic: Support is not only for crisis. Support is for the moment you are ready to stop repeating the same pattern.",
+    "caption": [
+      "Support is not only for crisis.",
+      "Support can be for the moment when you finally admit: I am tired of doing this the same way.",
+      "If the free guide brought something up for you, that may be worth exploring with support.",
+      "A consultation is a simple next step. We can look at what keeps repeating, what support may fit, and where to begin.",
+      "CTA: Book a consultation when you are ready."
+    ]
+  },
+  {
+    "day": 11,
+    "week": 3,
+    "type": "Quote",
+    "title": "Self-trust returns through honest next steps.",
+    "desc": "Build the self-trust pillar with practical examples.",
+    "graphic": "Quote graphic: Self-trust returns through small honest choices.",
+    "caption": [
+      "You may already know more than you think.",
+      "The hard part is often not knowing. It is trusting what you know.",
+      "That trust returns slowly, through small honest choices.",
+      "A pause. A boundary. A conversation. A decision not to abandon yourself again.",
+      "Self-trust is not rebuilt by one perfect breakthrough. It is rebuilt through repetition.",
+      "CTA: Save this for the next time you need a steady reminder."
+    ]
+  },
+  {
+    "day": 12,
+    "week": 3,
+    "type": "Carousel",
+    "title": "5 small ways to rebuild self-trust",
+    "desc": "Practical carousel with the actual five actions.",
+    "graphic": "Five cards: Keep one promise to yourself. Tell the truth sooner. Pause before yes. Rest without earning it. Choose one next step.",
+    "caption": [
+      "5 small ways to rebuild self-trust:",
+      "1. Keep one small promise to yourself.",
+      "2. Tell the truth to yourself sooner.",
+      "3. Pause before saying yes.",
+      "4. Rest without making yourself earn it.",
+      "5. Choose one next step instead of trying to fix everything.",
+      "Self-trust is rebuilt through repetition.",
+      "CTA: Which one do you need today?"
+    ]
+  },
+  {
+    "day": 13,
+    "week": 3,
+    "type": "Education",
+    "title": "You can be kind and still have boundaries.",
+    "desc": "Boundary education with examples.",
+    "graphic": "Boundary truth: Kindness and self-abandonment are not the same thing.",
+    "caption": [
+      "A boundary does not have to be harsh to be real.",
+      "It can sound like:",
+      "I need time to think before I answer.",
+      "I am not available for that conversation right now.",
+      "I care about you, and I am still choosing this boundary.",
+      "You do not have to explain it perfectly. You do not have to make everyone comfortable with it.",
+      "Kindness and self-abandonment are not the same thing."
+    ]
+  },
+  {
+    "day": 14,
+    "week": 3,
+    "type": "Reel",
+    "title": "Before you say yes, ask this.",
+    "desc": "Mini emotional fitness tool.",
+    "graphic": "Reel overlay: Am I agreeing from truth, guilt, fear, or habit?",
+    "caption": [
+      "Before you say yes, pause and ask:",
+      "Am I agreeing from truth, guilt, fear, or habit?",
+      "That question can tell you a lot.",
+      "You may still choose yes. But now it is a choice.",
+      "Not an automatic loop.",
+      "That is emotional fitness."
+    ]
+  },
+  {
+    "day": 15,
+    "week": 3,
+    "type": "Guide CTA",
+    "title": "Clarity over comfort.",
+    "desc": "Define the core Cindy voice lane without making it sound harsh.",
+    "graphic": "Definition graphic: Clarity over comfort does not mean being harsh. It means telling the truth kindly enough to do something with it.",
+    "caption": [
+      "Clarity over comfort does not mean being harsh.",
+      "It means telling the truth kindly enough to do something with it.",
+      "Comfort says: Do not look too closely.",
+      "Clarity says: Look gently, but look honestly.",
+      "You do not have to attack yourself to change. You also do not have to keep pretending the pattern is not costing you something.",
+      "CTA: Download the free guide: Interrupt the Loop."
+    ]
+  },
+  {
+    "day": 16,
+    "week": 4,
+    "type": "Carousel",
+    "title": "3 questions to ask before you reply",
+    "desc": "Give the actual questions so the post works by itself.",
+    "graphic": "Three questions: What am I feeling? What am I assuming? What response matches my values?",
+    "caption": [
+      "Before you reply, pause and ask three questions:",
+      "1. What am I feeling right now?",
+      "2. What am I assuming right now?",
+      "3. What response matches my values, not just my fear?",
+      "You do not need a perfect response. You need a grounded one.",
+      "Sometimes the most powerful reply is the one you do not send from the first wave."
+    ]
+  },
+  {
+    "day": 17,
+    "week": 4,
+    "type": "Education",
+    "title": "Calm does not mean passive.",
+    "desc": "Explain the difference between calm and avoidance.",
+    "graphic": "Calm is not silence. Calm is choosing your response without abandoning your truth.",
+    "caption": [
+      "Calm does not mean passive.",
+      "It does not mean pretending it did not hurt. It does not mean agreeing when something is not okay.",
+      "Calm means you are giving yourself enough space to respond from truth instead of reaction.",
+      "You can be calm and direct. Gentle and honest. Loving and boundaried.",
+      "That is the middle path many people were never taught."
+    ]
+  },
+  {
+    "day": 18,
+    "week": 4,
+    "type": "Carousel",
+    "title": "The body knows before the mind explains.",
+    "desc": "List body signs so people can recognize activation.",
+    "graphic": "Body signs of activation: Tight jaw. Heavy chest. Shallow breath. Hot face. Knotted stomach. Urge to fix, flee, freeze, or fight.",
+    "caption": [
+      "Your body often notices the loop before your mind can explain it.",
+      "Common signs of activation include:",
+      "Tight jaw. Heavy chest. Shallow breath. Hot face. Knotted stomach. Racing thoughts. The urge to fix, flee, freeze, or fight.",
+      "You do not have to fix everything the second you notice it.",
+      "Start by listening. Your body is giving you information.",
+      "CTA: Use Interrupt the Loop the next time you feel activated."
+    ]
+  },
+  {
+    "day": 19,
+    "week": 4,
+    "type": "Reel",
+    "title": "One sign you may be ready for support.",
+    "desc": "Consultation bridge.",
+    "graphic": "Reel overlay: I know better, but I keep doing the same thing.",
+    "caption": [
+      "One sign you may be ready for support is when you keep saying:",
+      "I know better, but I keep doing the same thing.",
+      "That does not mean you are weak. It means insight alone may not be enough.",
+      "Sometimes you need support, reflection, tools, and space to practice a different response.",
+      "That is what coaching can help with.",
+      "CTA: Book a consultation with Cindy."
+    ]
+  },
+  {
+    "day": 20,
+    "week": 4,
+    "type": "Consultation CTA",
+    "title": "What to do after you notice the pattern",
+    "desc": "Give the next-step process and then invite consultation.",
+    "graphic": "After you notice the pattern: Name it. Pause your first reaction. Choose one grounded next step. Ask for support if it keeps repeating.",
+    "caption": [
+      "Noticing the pattern is powerful, but it is not the whole process.",
+      "After you notice it:",
+      "1. Name the loop without judging yourself.",
+      "2. Pause your first reaction.",
+      "3. Choose one grounded next step.",
+      "4. Ask for support if the pattern keeps repeating.",
+      "If you are tired of sorting it alone, a consultation is a simple place to begin.",
+      "CTA: Book a consultation with Cindy."
+    ]
+  },
+  {
+    "day": 21,
+    "week": 5,
+    "type": "Mini Campaign",
+    "title": "5 Minutes to Interrupt the Loop — Day 1: Pause",
+    "desc": "Start final conversion push with a clear micro-practice.",
+    "graphic": "Mini reset Day 1: Pause. Ask: What is happening in me right now?",
+    "caption": [
+      "For the next few posts, we are walking through a simple reset.",
+      "Today’s step: pause.",
+      "Not forever. Just long enough to notice: What is happening in me right now?",
+      "Try this: take one slower breath, unclench your jaw, and wait before acting from the first wave.",
+      "That pause is not weakness. It is where choice begins."
+    ]
+  },
+  {
+    "day": 22,
+    "week": 5,
+    "type": "Mini Campaign",
+    "title": "Day 2: Name the Loop",
+    "desc": "Name the pattern with examples.",
+    "graphic": "Name the loop: over-explaining, shutdown, chasing, resentment, people-pleasing, spiraling.",
+    "caption": [
+      "Naming the loop gives you distance from it.",
+      "Try this:",
+      "I am in the over-explaining loop.",
+      "I am in the shutdown loop.",
+      "I am in the chasing loop.",
+      "I am in the resentment loop.",
+      "You are not becoming the label. You are noticing the pattern.",
+      "That matters."
+    ]
+  },
+  {
+    "day": 23,
+    "week": 5,
+    "type": "Mini Campaign",
+    "title": "Day 3: What does your body know?",
+    "desc": "Body check prompt with specific locations.",
+    "graphic": "Ask your body: Where do I feel this? Chest, stomach, throat, shoulders, jaw?",
+    "caption": [
+      "Your body often notices the loop before your mind can explain it.",
+      "Ask: Where do I feel this?",
+      "Chest? Stomach? Throat? Shoulders? Jaw?",
+      "Then ask: What does this part of me seem to need?",
+      "You do not have to fix it immediately. Start by listening."
+    ]
+  },
+  {
+    "day": 24,
+    "week": 5,
+    "type": "Mini Campaign",
+    "title": "Day 4: What am I trying to protect?",
+    "desc": "Protection question with examples.",
+    "graphic": "Ask: What am I trying to protect? Peace, pride, safety, connection, control, dignity.",
+    "caption": [
+      "This question can soften shame:",
+      "What am I trying to protect right now?",
+      "Maybe your peace. Your pride. Your safety. Your connection. Your sense of control. Your dignity.",
+      "Once you know what you are protecting, you can choose a better way to care for it.",
+      "Protection is not the problem. The old strategy may simply need updating."
+    ]
+  },
+  {
+    "day": 25,
+    "week": 5,
+    "type": "Mini Campaign",
+    "title": "Day 5: Choose one honest next step.",
+    "desc": "Single action prompt with examples.",
+    "graphic": "Choose one honest next step: send the message, take the walk, wait to reply, set the boundary, ask for support, rest.",
+    "caption": [
+      "Do not try to change your whole life in one moment.",
+      "Choose one honest next step.",
+      "Send the message. Take the walk. Do not reply yet. Say the boundary. Ask for support. Rest instead of spiraling.",
+      "One step counts.",
+      "And one repeated honest step can become a new pattern."
+    ]
+  },
+  {
+    "day": 26,
+    "week": 5,
+    "type": "Lead Magnet Reminder",
+    "title": "4 grounded responses when activated",
+    "desc": "Give the four responses and bridge to the guide.",
+    "graphic": "Four grounded responses: Ask for a pause. Write before replying. Take a 5-minute walk. Speak the truth calmly.",
+    "caption": [
+      "When you feel activated, try one grounded response:",
+      "1. Ask for a pause.",
+      "2. Write before you reply.",
+      "3. Take a 5-minute walk.",
+      "4. Speak the truth calmly.",
+      "You do not have to choose the perfect response. Choose one that keeps you connected to yourself.",
+      "CTA: Want the full reset? Download Interrupt the Loop."
+    ]
+  },
+  {
+    "day": 27,
+    "week": 5,
+    "type": "Education",
+    "title": "Why naming the pattern helps",
+    "desc": "Explain why naming reduces the loop’s power.",
+    "graphic": "Naming the pattern creates distance. Distance creates choice.",
+    "caption": [
+      "Naming the pattern helps because it creates distance.",
+      "Instead of saying, This is just who I am, you can say, This is the loop I am in right now.",
+      "That small shift matters.",
+      "You are no longer fused with the reaction. You are observing it.",
+      "And when you can observe it, you can interrupt it.",
+      "CTA: Save this for the next time the pattern feels loud."
+    ]
+  },
+  {
+    "day": 28,
+    "week": 5,
+    "type": "Retreat Soft Post",
+    "title": "Sometimes you need space to reset.",
+    "desc": "Introduce retreat angle with clear softer CTA.",
+    "graphic": "Sometimes you need space to reset. A guide can start it. A consultation can support it. A retreat can deepen it.",
+    "caption": [
+      "A retreat is not running away.",
+      "It is creating enough space, quiet, and support to hear what your life has been trying to tell you.",
+      "For some people, the first step is a guide.",
+      "For others, it is a conversation.",
+      "For others, it is deeper space to reset.",
+      "There is no wrong starting point. Just start honestly.",
+      "CTA: Explore coaching, workshops, and retreats with Cindy."
+    ]
+  },
+  {
+    "day": 29,
+    "week": 5,
+    "type": "Authority Post",
+    "title": "This work is gentle. It is also honest.",
+    "desc": "Cindy voice lane with stronger clarity.",
+    "graphic": "The work is gentle. And honest. Both are needed.",
+    "caption": [
+      "My approach is not about pushing people into change before they are ready.",
+      "But it is also not about pretending the loop is not costing something.",
+      "The work is gentle. And honest.",
+      "Gentle enough to respect your pace.",
+      "Honest enough to tell the truth.",
+      "Because both are needed.",
+      "CTA: If you are ready for support, book a consultation."
+    ]
+  },
+  {
+    "day": 30,
+    "week": 5,
+    "type": "Final CTA",
+    "title": "Interrupt the loop. Take the next honest step.",
+    "desc": "End of cycle CTA with reflection prompts.",
+    "graphic": "Month-end reflection: What pattern became clearer? What did it cost? What next step feels honest?",
+    "caption": [
+      "If you have been following along this month, pause and ask:",
+      "What pattern became clearer?",
+      "What has this loop been costing me?",
+      "What next step feels honest now?",
+      "You do not have to know the whole path.",
+      "Start with the free guide. And when you are ready for support, book a consultation with Cindy.",
+      "CTA: Interrupt the loop. Take the next honest step."
+    ]
+  }
 ];
 
 let currentPost = null;
@@ -537,21 +1038,31 @@ function renderEmails(){
 }
 
 function renderCalendar(filter="all"){
-  let filtered = posts.filter(p=>filter==="all" || String(p.week)===String(filter));
-  document.getElementById("calendarGrid").innerHTML = filtered.map(p=>{
-    const done = state.posts[p.day];
-    const next = state.next[p.day];
-    return `<div class="day">
-      <div class="day-top"><span class="day-num">${p.day}</span><span class="pill ${done?'good':next?'warn':''}">${done?'Posted':next?'Next':p.type}</span></div>
-      <h4>${p.title}</h4>
-      <p>${p.desc}</p>
-      <div class="day-actions">
-        <button class="mini-btn" onclick="openPost(${p.day})">View</button>
-        <button class="mini-btn next" onclick="toggleNext(${p.day})">${next?'Unmark Next':'Next'}</button>
-        <button class="mini-btn done" onclick="togglePosted(${p.day})">${done?'Unpost':'Posted'}</button>
-      </div>
-    </div>`;
+  var filtered = posts.filter(function(p){ return filter==="all" || String(p.week)===String(filter); });
+  var html = filtered.map(function(p){
+    var done = state.posts[p.day];
+    var next = state.next[p.day];
+    var img = getImageInfo(p.day);
+    var statusClass = done ? "good" : (next ? "warn" : "");
+    var statusText = done ? "Posted" : (next ? "Next" : p.type);
+    var imageButton = img.exists
+      ? '<button class="mini-btn" onclick="downloadPostImage(' + p.day + ')">Get Image</button>'
+      : '<button class="mini-btn disabled" title="No mapped image yet">Need Image</button>';
+
+    return '<div class="day">' +
+      '<div class="day-top"><span class="day-num">' + p.day + '</span><span class="pill ' + statusClass + '">' + statusText + '</span></div>' +
+      '<h4>' + escapeHtml(p.title) + '</h4>' +
+      '<p>' + escapeHtml(p.desc) + '</p>' +
+      '<p><span class="pill ' + (img.exists ? "good" : "warn") + '">' + (img.exists ? "Image ready" : "Image missing") + '</span></p>' +
+      '<div class="day-actions">' +
+        '<button class="mini-btn" onclick="openPost(' + p.day + ')">View</button>' +
+        imageButton +
+        '<button class="mini-btn next" onclick="toggleNext(' + p.day + ')">' + (next ? "Unmark Next" : "Next") + '</button>' +
+        '<button class="mini-btn done" onclick="togglePosted(' + p.day + ')">' + (done ? "Unpost" : "Posted") + '</button>' +
+      '</div>' +
+    '</div>';
   }).join("");
+  document.getElementById("calendarGrid").innerHTML = html;
   updateProgress();
 }
 document.querySelectorAll(".tab").forEach(tab=>{
@@ -580,20 +1091,94 @@ function toggleNext(day){
   state.next[day]=!state.next[day];
   save();renderCalendar(document.querySelector(".tab.active").dataset.week);showToast(state.next[day]?"Marked next":"Removed from next");
 }
+
+function escapeHtml(value){
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function normalizeCaption(caption){
+  let text = Array.isArray(caption) ? caption.join("\n\n") : String(caption || "");
+  return text
+    .replace(/\\n/g, "\n")
+    .replace(/\/n/g, "\n")
+    .replace(/\r\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 function openPost(day){
-  const p = posts.find(x=>x.day===day);
+  var p = posts.find(function(x){ return x.day===day; });
   currentPost = p;
-  document.getElementById("modalEyebrow").textContent = `Day ${p.day} · ${p.type}`;
+  var img = getImageInfo(p.day);
+
+  document.getElementById("modalEyebrow").textContent = "Day " + p.day + " · " + p.type;
   document.getElementById("modalTitle").textContent = p.title;
   document.getElementById("modalDesc").textContent = p.desc;
-  document.getElementById("modalCaption").textContent = p.caption + "\\n\\n#CindySanti #InterruptTheLoop #RealLifeTransformation #EmotionalFitness #SelfTrust #ClarityOverComfort #GroundedGuidance";
+
+  var imageStatusHtml = "";
+  if(img.exists){
+    imageStatusHtml = 'Mapped to <span class="code-chip">' + escapeHtml(img.file) + '</span><br>' +
+      '<button class="btn" style="margin-top:10px" onclick="downloadPostImage(' + p.day + ')">Get Image</button>';
+  } else {
+    imageStatusHtml = "Missing for this day. This is a good candidate to generate next.";
+  }
+
+  document.getElementById("modalBrief").innerHTML =
+    '<div class="brief-box"><strong>Graphic / standalone content:</strong><br>' +
+    escapeHtml(p.graphic || "Use the caption as the source for the image copy.") +
+    '</div>' +
+    '<div class="brief-box"><strong>Image status:</strong> ' + imageStatusHtml + '</div>' +
+    '<div class="brief-box"><strong>Standalone status:</strong> Ready — includes the answer, example, steps, prompts, or CTA needed for the post to make sense without extra context.</div>';
+
+  var hashtags = "#CindySanti #InterruptTheLoop #EmotionalFitness #SelfTrust #ClarityOverComfort #GroundedGuidance";
+  document.getElementById("modalCaption").textContent = normalizeCaption(p.caption) + "\n\n" + hashtags;
+
+  var modalBtn = document.getElementById("modalImageBtn");
+  if(img.exists){
+    modalBtn.disabled = false;
+    modalBtn.classList.remove("disabled");
+    modalBtn.textContent = "Get Image";
+    modalBtn.onclick = function(){ downloadPostImage(p.day); };
+  } else {
+    modalBtn.disabled = true;
+    modalBtn.classList.add("disabled");
+    modalBtn.textContent = "Need Image";
+    modalBtn.onclick = function(){ showToast("No image mapped for this day yet"); };
+  }
+
   document.getElementById("modal").classList.add("open");
 }
 function closeModal(){document.getElementById("modal").classList.remove("open");}
 function copyModalCaption(){
-  const text = document.getElementById("modalCaption").textContent;
-  navigator.clipboard.writeText(text).then(()=>showToast("Caption copied"));
+  var text = document.getElementById("modalCaption").textContent;
+  navigator.clipboard.writeText(text).then(function(){ showToast("Caption copied"); });
 }
+function downloadPostImage(day){
+  var targetDay = day || (currentPost && currentPost.day);
+  var img = getImageInfo(targetDay);
+  if(!img.exists){
+    showToast("No image mapped for this day yet");
+    return;
+  }
+
+  // Safer than fetch for local file testing and GitHub Pages.
+  // It opens the relative path in a new tab; browser can download/save from there.
+  var a = document.createElement("a");
+  a.href = img.url;
+  a.target = "_blank";
+  a.rel = "noopener";
+  a.download = img.file;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  showToast("Opening " + img.file);
+}
+
 function markCurrentPosted(){if(currentPost){state.posts[currentPost.day]=true;state.next[currentPost.day]=false;save();renderCalendar(document.querySelector(".tab.active").dataset.week);showToast("Marked posted");}}
 function markCurrentNext(){if(currentPost){state.next[currentPost.day]=true;save();renderCalendar(document.querySelector(".tab.active").dataset.week);showToast("Marked next");}}
 function markWeekOneNext(){[1,2,4,5].forEach(d=>state.next[d]=true);save();renderCalendar(document.querySelector(".tab.active").dataset.week);showToast("Week 1 marked next");}
@@ -627,6 +1212,23 @@ function resetProgress(){
 }
 function stub(name){showToast(`${name} is a future wiring action`);}
 window.addEventListener("keydown", e=>{if(e.key==="Escape") closeModal();});
+
+
+// Expose handlers for inline onclick attributes.
+window.showSection = showSection;
+window.resetProgress = resetProgress;
+window.markWeekOneNext = markWeekOneNext;
+window.openPost = openPost;
+window.toggleNext = toggleNext;
+window.togglePosted = togglePosted;
+window.closeModal = closeModal;
+window.copyModalCaption = copyModalCaption;
+window.downloadPostImage = downloadPostImage;
+window.markCurrentPosted = markCurrentPosted;
+window.markCurrentNext = markCurrentNext;
+window.saveKpis = saveKpis;
+window.generateInsight = generateInsight;
+window.stub = stub;
 
 renderReady();
 renderEmails();
