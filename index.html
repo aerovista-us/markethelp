@@ -475,26 +475,28 @@ const imageBasePath = "expanded_social_graphics/square_1080/";
 // Remove days from this set once matching PNGs exist in square_1080/ (calendar / Get Image unlocks automatically).
 const imagePendingExportDays = new Set([21,22,23,24,25,26,27,28,29,30]);
 
+// Calendar day → filename in square_1080/. Not always NN = 0N: some swaps align art to post copy vs pack index.
+// Preview/captions list pack order 01–20; see docs/marketing-calendar-image-alignment.md.
 const imageCatalog = {
   1:"01-you-are-not-broken.png",
   2:"02-3-signs-you-are-in-an-emotional-loop.png",
-  3:"03-the-pause-is-where-your-power-starts.png",
+  3:"day3.png",
   4:"04-if-your-reaction-feels-bigger-than-the-moment.png",
   5:"05-start-with-five-minutes.png",
   6:"06-the-loop-once-protected-you.png",
   7:"07-what-is-this-pattern-costing-you.png",
-  8:"08-peace-is-not-pretending-it-does-not-hurt.png",
-  9:"09-something-in-me-feels-activated.png",
+  8:"day8.png",
+  9:"18-you-are-allowed-to-outgrow-survival-mode.png",
   10:"10-you-do-not-have-to-be-in-crisis-to-ask-for-support.png",
   11:"11-self-trust-returns-through-honest-next-steps.png",
   12:"12-5-small-ways-to-rebuild-self-trust.png",
   13:"13-you-can-be-kind-and-still-have-boundaries.png",
-  14:"14-before-you-say-yes-pause.png",
-  15:"15-one-honest-next-step-is-enough-for-today.png",
-  16:"16-the-next-step-does-not-have-to-be-dramatic.png",
-  17:"17-coaching-can-support.png",
-  18:"18-you-are-allowed-to-outgrow-survival-mode.png",
-  19:"19-insight-alone-may-not-be-enough.png",
+  14:"16-the-next-step-does-not-have-to-be-dramatic.png",
+  15:"19-insight-alone-may-not-be-enough.png",
+  16:"14-before-you-say-yes-pause.png",
+  17:"day17.png",
+  18:"09-something-in-me-feels-activated.png",
+  19:"15-one-honest-next-step-is-enough-for-today.png",
   20:"20-interrupt-the-loop.png",
   21:"21-mini-reset-day-1-pause.png",
   22:"22-name-the-loop.png",
