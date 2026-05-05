@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Mini campaign — squares 21–30 (PNG export)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #e8dfd4;
+      color: #332d28;
+      padding-bottom: 48px;
+    }
+    header {
+      max-width: 920px;
+      margin: auto;
+      padding: 28px 20px;
+    }
+    header h1 {
+      font-family: Georgia, serif;
+      color: #6f4f3a;
+      font-size: 28px;
+      margin: 0 0 8px;
+      line-height: 1.2;
+    }
+    header p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.55;
+      color: #5c5249;
+      max-width: 720px;
+    }
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255, 251, 245, .92);
+      border-bottom: 1px solid #d8c8b8;
+      padding: 14px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+    .toolbar button {
+      font: inherit;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 12px 20px;
+      font-weight: bold;
+      border: 1px solid #d8c8b8;
+      background: #fff;
+      color: #6f4f3a;
+    }
+    .toolbar button.primary {
+      background: #6f4f3a;
+      color: #fff;
+      border-color: #6f4f3a;
+    }
+    .toolbar button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+    .toolbar .status {
+      font-size: 14px;
+      color: #7a6a5d;
+    }
+    .preview-wrap {
+      max-width: 1160px;
+      margin: 24px auto 0;
+      padding: 0 16px;
+    }
+    .preview-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+    .preview-row .scaled {
+      width: 378px;
+      height: 378px;
+      flex-shrink: 0;
+      box-shadow: 0 14px 40px rgba(51,45,40,.14);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .preview-row .scaled .square-canvas {
+      transform-origin: top left;
+      transform: scale(0.35);
+    }
+    .preview-row button {
+      font: inherit;
+      cursor: pointer;
+      border-radius: 12px;
+      padding: 10px 14px;
+      border: 1px solid #d8c8b8;
+      background: #fff;
+      color: #6f4f3a;
+      font-weight: bold;
+      font-size: 13px;
+    }
+    .export-stack {
+      position: absolute;
+      left: -12000px;
+      top: 0;
+      width: 1080px;
+    }
+    .square-canvas {
+      width: 1080px;
+      height: 1080px;
+      padding: 72px;
+      background:
+        radial-gradient(circle at 12% 10%, rgba(196, 154, 139, .22), transparent 38%),
+        radial-gradient(circle at 92% 8%, rgba(154, 165, 140, .16), transparent 32%),
+        linear-gradient(165deg, #fbf7f2 0%, #efe6db 52%, #e8dfd4 100%);
+    }
+    .square-card {
+      background: rgba(255, 255, 255, .94);
+      border: 2px solid #d8c8b8;
+      border-radius: 36px;
+      height: 100%;
+      padding: 64px 56px 48px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.75);
+    }
+    .square-card .brand-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+      padding-bottom: 18px;
+      border-bottom: 3px solid #a98b73;
+      font-size: 20px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      font-weight: bold;
+      color: #a98b73;
+    }
+    .square-card .brand-line span:last-child {
+      font-size: 18px;
+      letter-spacing: .08em;
+      color: #6f4f3a;
+    }
+    .square-card .eyebrow {
+      font-size: 26px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      font-weight: bold;
+      color: #7a6a5d;
+      margin-bottom: 16px;
+    }
+    .square-card h1 {
+      margin: 0;
+      font-family: Georgia, serif;
+      font-weight: bold;
+      font-size: 58px;
+      line-height: 1.08;
+      color: #6f4f3a;
+      letter-spacing: -0.02em;
+    }
+    .square-card .sub {
+      margin: 36px 0 0;
+      font-size: 34px;
+      line-height: 1.42;
+      color: #554a42;
+      max-height: 480px;
+    }
+    .square-card .sub ul {
+      margin: 12px 0 0;
+      padding-left: 32px;
+    }
+    .square-card .sub li {
+      margin-bottom: 10px;
+      padding-left: 6px;
+    }
+    .square-card .footnote {
+      margin-top: auto;
+      padding-top: 28px;
+      font-size: 24px;
+      line-height: 1.4;
+      color: #a98b73;
+      font-weight: bold;
+      border-top: 1px dashed #d8c8b8;
+    }
+    .square-canvas.tight-headline .square-card h1 {
+      font-size: 48px;
+      line-height: 1.12;
+    }
+    .square-canvas.day-29 .square-card h1 {
+      font-size: 46px;
+    }
+    code { font-family: ui-monospace, monospace; font-size: 88%; background: rgba(111,79,58,.07); padding: 2px 6px; border-radius: 6px;}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Mini campaign — square graphics (Days 21–30)</h1>
+    <p>Each slide renders at <strong>1080×1080</strong>. Use <strong>Download ZIP (all PNGs)</strong>, unzip into <code>square_1080/</code>, then empty <code>imagePendingExportDays</code> in <code>../index.html</code>. First load needs network (CDN). If scripts are blocked, open this file through a local static server.</p>
+  </header>
+
+  <div class="toolbar">
+    <button type="button" class="primary" id="btnZip">Download ZIP (all PNGs)</button>
+    <span class="status" id="status">Ready.</span>
+  </div>
+
+  <section class="preview-wrap" id="previewArea"></section>
+
+  <!-- Off-screen originals for rasterization -->
+  <div class="export-stack" id="exportStack" aria-hidden="true"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+
+  <script>
+  (function () {
+    var DATA = [
+      {
+        day: 21,
+        file: '21-mini-reset-day-1-pause.png',
+        brandLeft: 'Final push · 21',
+        brandRight: 'Interrupt the Loop',
+        eyebrow: '5 minutes · Step 1 of 10 — Pause',
+        headline: 'What is happening in me right now?',
+        subHtml: '<p>Not forever. Try one slower breath and unclench your jaw.<br>Pause before acting from the first wave.&nbsp;<strong>That pause is where choice begins.</strong></p>'
+      },
+      {
+        day: 22,
+        file: '22-name-the-loop.png',
+        brandLeft: 'Final push · 22',
+        brandRight: 'Interrupt the Loop',
+        eyebrow: 'Step 2 of 10 — Name it',
+        headline: 'Name the loop.',
+        subHtml: '<ul><li>I\'m in the over-explaining loop.</li><li>I\'m in the shutdown loop.</li><li>I\'m in the chasing loop.</li><li>I\'m in the resentment loop.</li></ul><p>You are <strong>not</strong> the label. You\'re noticing the pattern.</p>'
+      },
+      {
+        day: 23,
+        file: '23-where-do-you-feel-this.png',
+        brandLeft: 'Final push · 23',
+        brandRight: 'Interrupt the Loop',
+        eyebrow: 'Step 3 of 10 — Body',
+        headline: 'Where do you feel this?',
+        subHtml: '<p>Chest · Stomach · Throat · Shoulders · Jaw</p><p>Then gently ask:&nbsp;<strong>What does this part of me need?</strong> Start by listening—you don\'t have to fix it immediately.</p>'
+      },
+      {
+        day: 24,
+        file: '24-what-am-i-trying-to-protect-mini.png',
+        brandLeft: 'Final push · 24',
+        brandRight: 'Interrupt the Loop',
+        eyebrow: 'Step 4 of 10 — Protect',
+        headline: 'What am I trying to protect?',
+        subHtml: '<p>Maybe your peace · pride · safety · connection · dignity.</p><p>Protection isn\'t the problem. Sometimes the&nbsp;<strong>old strategy needs updating.</strong></p>'
+      },
+      {
+        day: 25,
+        file: '25-choose-one-honest-next-step-mini.png',
+        brandLeft: 'Final push · 25',
+        brandRight: 'Interrupt the Loop',
+        eyebrow: 'Step 5 of 10 — Action',
+        headline: 'Choose one honest next step.',
+        subHtml: '<p>Send the message · Take the walk · Wait to reply · Set the boundary · Ask for support · Rest instead of spiraling.</p><p><strong>One step counts.</strong> One repeated honest step can become a new pattern.</p>'
+      },
+      {
+        day: 26,
+        file: '26-four-grounded-responses-when-activated.png',
+        brandLeft: 'Day 26 · Reminder',
+        brandRight: 'Interrupt the Loop',
+        eyebrow: 'When you feel activated',
+        headline: 'Four grounded responses',
+        subHtml: '<ol style="margin:0;padding-left:36px;font-size:32px;line-height:1.5"><li>Ask for a pause.</li><li>Write before you reply.</li><li>Take a 5-minute walk.</li><li>Speak the truth calmly.</li></ol><p>Want the full reset?&nbsp;<strong>Download the free guide.</strong></p>'
+      },
+      {
+        day: 27,
+        file: '27-naming-creates-choice.png',
+        brandLeft: 'Day 27',
+        brandRight: 'Interrupt the Loop',
+        eyebrow: 'Education',
+        headline: 'Naming creates distance.<br>Distance creates choice.',
+        subHtml: '<p>Instead of “this is just who I am,” try “this is the loop I\'m in right now.”</p><p>Observe the reaction—then you can&nbsp;<strong>interrupt it.</strong></p>'
+      },
+      {
+        day: 28,
+        file: '28-space-to-reset.png',
+        brandLeft: 'Day 28',
+        brandRight: 'Cindy Santi',
+        eyebrow: 'Retreats · Workshops · Coaching',
+        headline: 'Sometimes you need space to reset.',
+        subHtml: '<p>A guide can start it. A conversation can support it. A retreat can deepen it.</p><p><strong>No wrong starting point.</strong> Start honestly.</p>'
+      },
+      {
+        day: 29,
+        file: '29-gentle-and-honest.png',
+        brandLeft: 'Day 29',
+        brandRight: 'Cindy Santi',
+        eyebrow: 'How I work',
+        headline: 'Gentle. Honest. Both.',
+        subHtml: '<p>Not pushing you before you\'re ready—and not pretending the loop isn\'t costing something.</p><p><strong>Gentle enough for your pace. Honest enough for the truth.</strong></p>'
+      },
+      {
+        day: 30,
+        file: '30-interrupt-the-loop-next-honest-step.png',
+        brandLeft: 'Day 30 · Cycle',
+        brandRight: 'cindysanti.com',
+        eyebrow: 'Month-end reflection',
+        headline: 'Interrupt the loop. Take the next honest step.',
+        subHtml: '<ul><li>What pattern became clearer?</li><li>What has this loop been costing me?</li><li>What next step feels honest now?</li></ul><p>Free guide + consultation when you\'re ready.</p>'
+      }
+    ];
+
+    function buildSquare(d) {
+      var el = document.createElement('div');
+      el.className = 'square-canvas';
+      if (d.day === 27 || d.day === 29) el.classList.add('tight-headline');
+      if (d.day === 29) el.classList.add('day-29');
+      el.id = 'slide-' + d.day;
+      el.dataset.file = d.file;
+      el.innerHTML =
+        '<div class="square-card">' +
+          '<div class="brand-line"><span>' + escapeHtml(d.brandLeft) + '</span><span>' + escapeHtml(d.brandRight) + '</span></div>' +
+          '<div class="eyebrow">' + escapeHtml(d.eyebrow) + '</div>' +
+          '<h1>' + d.headline + '</h1>' +
+          '<div class="sub">' + d.subHtml + '</div>' +
+          '<div class="footnote">Cindy Santi · Coach · Retreats · Workshops</div>' +
+        '</div>';
+      return el;
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    var stack = document.getElementById('exportStack');
+    var previewArea = document.getElementById('previewArea');
+    DATA.forEach(function (d) {
+      var full = buildSquare(d);
+      stack.appendChild(full);
+
+      var row = document.createElement('div');
+      row.className = 'preview-row';
+      var scaled = document.createElement('div');
+      scaled.className = 'scaled';
+      var inner = full.cloneNode(true);
+      inner.id = '';
+      scaled.appendChild(inner);
+      var meta = document.createElement('div');
+      meta.style.flex = '1';
+      meta.style.minWidth = '200px';
+      meta.innerHTML = '<strong>Day ' + d.day + '</strong><br><code style="font-size:12px">' + escapeHtml(d.file) + '</code>';
+      var one = document.createElement('button');
+      one.type = 'button';
+      one.textContent = 'Download this PNG';
+      one.addEventListener('click', function () { downloadOne(d.day); });
+      meta.appendChild(document.createElement('br'));
+      meta.appendChild(one);
+      row.appendChild(scaled);
+      row.appendChild(meta);
+      previewArea.appendChild(row);
+    });
+
+    function getSourceEl(day) {
+      return document.getElementById('slide-' + day);
+    }
+
+    function setStatus(t) {
+      document.getElementById('status').textContent = t;
+    }
+
+    function canvasToBlob(canvas) {
+      return new Promise(function (resolve) {
+        canvas.toBlob(function (b) { resolve(b); }, 'image/png');
+      });
+    }
+
+    async function downloadOne(day) {
+      var el = getSourceEl(day);
+      if (!window.html2canvas) {
+        setStatus('html2canvas failed to load (check network / CDN).');
+        return;
+      }
+      setStatus('Rendering day ' + day + '…');
+      var canvas = await html2canvas(el, {
+        width: 1080,
+        height: 1080,
+        scale: 1,
+        backgroundColor: null,
+        logging: false,
+        useCORS: true
+      });
+      var blob = await canvasToBlob(canvas);
+      var name = el.dataset.file;
+      saveAs(blob, name);
+      setStatus('Saved ' + name);
+    }
+
+    async function downloadZip() {
+      if (!window.html2canvas || !window.JSZip || !window.saveAs) {
+        setStatus('Missing library (html2canvas, JSZip, or FileSaver).');
+        return;
+      }
+      var btn = document.getElementById('btnZip');
+      btn.disabled = true;
+      var zip = new JSZip();
+      try {
+        for (var i = 0; i < DATA.length; i++) {
+          var d = DATA[i];
+          setStatus('Rendering day ' + d.day + ' of 30 (' + (i + 1) + '/10)…');
+          var el = getSourceEl(d.day);
+          await new Promise(function (r) { setTimeout(r, 40); });
+          var canvas = await html2canvas(el, {
+            width: 1080,
+            height: 1080,
+            scale: 1,
+            backgroundColor: null,
+            logging: false,
+            useCORS: true
+          });
+          var blob = await canvasToBlob(canvas);
+          zip.file(d.file, blob);
+        }
+        setStatus('Building ZIP…');
+        var zipped = await zip.generateAsync({ type: 'blob' });
+        saveAs(zipped, 'mini_campaign_squares_21_through_30.zip');
+        setStatus('Saved mini_campaign_squares_21_through_30.zip — unzip into square_1080/');
+      } catch (err) {
+        console.error(err);
+        setStatus('Error: ' + (err.message || String(err)));
+      }
+      btn.disabled = false;
+    }
+
+    document.getElementById('btnZip').addEventListener('click', downloadZip);
+  })();
+  </script>
+</body>
+</html>

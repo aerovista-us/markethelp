@@ -92,6 +92,7 @@
     .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
     .btn.soft{background:var(--soft)}
     .btn:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(51,45,40,.10)}
+    a.btn{text-decoration:none}
     .grid{display:grid;gap:18px}
     .grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
     .grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -256,6 +257,13 @@
       <h3>Local Save</h3>
       <p>This page stores checklist progress in this browser using localStorage. No account required.</p>
     </div>
+
+    <div class="side-card">
+      <h3>Square graphics</h3>
+      <p><a href="expanded_social_graphics/preview.html" target="_blank" rel="noopener noreferrer">Days 1–20 — preview &amp; download ZIP</a></p>
+      <p><a href="expanded_social_graphics/mini_campaign_squares_exporter.html" target="_blank" rel="noopener noreferrer">Days 21–30 — mini campaign PNG export</a></p>
+      <p class="note">Opens sibling HTML in a new tab. Paths stay valid when this file lives in <span class="code-chip">Marketing/</span>.</p>
+    </div>
   </aside>
 
   <main class="main">
@@ -266,6 +274,8 @@
       <div class="hero-actions">
         <button class="btn primary" onclick="showSection('ready')">See What’s Ready</button>
         <button class="btn soft" onclick="showSection('calendar')">Open 30-Day Calendar</button>
+        <a class="btn" href="expanded_social_graphics/preview.html" target="_blank" rel="noopener noreferrer">Graphics: days 1–20</a>
+        <a class="btn" href="expanded_social_graphics/mini_campaign_squares_exporter.html" target="_blank" rel="noopener noreferrer">Graphics: days 21–30</a>
         <button class="btn" onclick="window.print()">Print / Save PDF</button>
         <button class="btn" onclick="resetProgress()">Reset Local Progress</button>
       </div>
@@ -274,9 +284,9 @@
     <section id="dashboard" class="panel active section">
       <div class="grid cols-4">
         <div class="card">
-          <div class="stat"><div><div class="label">Mapped Images</div><div class="num">20</div></div><span class="pill good">PNG</span></div>
+          <div class="stat"><div><div class="label">Mapped Images</div><div class="num">30</div></div><span class="pill good">PNG</span></div>
           <div class="bar"><span style="width:100%"></span></div>
-          <p>20 existing graphics are mapped to the first 20 days. Days 21–30 are flagged as needing images.</p>
+          <p>30 square filenames are mapped to <code style="background:var(--soft);padding:2px 6px;border-radius:6px;font-size:12px;">expanded_social_graphics/square_1080/</code>, one per posting day. Days 21–30 stay “need image” in the calendar until those PNGs are exported (then clear <span class="code-chip">imagePendingExportDays</span> in this file). <a href="expanded_social_graphics/preview.html" target="_blank" rel="noopener noreferrer">Preview ZIP (1–20)</a> · <a href="expanded_social_graphics/mini_campaign_squares_exporter.html" target="_blank" rel="noopener noreferrer">ZIP export (21–30)</a></p>
         </div>
         <div class="card">
           <div class="stat"><div><div class="label">Welcome Emails</div><div class="num">5</div></div><span class="pill good">HTML</span></div>
@@ -336,7 +346,7 @@
     <section id="calendar" class="panel section">
       <div class="card">
         <h3>30-Day Organic Posting Cycle</h3>
-        <p>Mark each post as <strong>Next</strong> or <strong>Posted</strong>. Click View for the caption, CTA, and posting notes.</p>
+        <p>Mark each post as <strong>Next</strong> or <strong>Posted</strong>. Click View for the caption, CTA, and posting notes. Square art: <a href="expanded_social_graphics/preview.html" target="_blank" rel="noopener noreferrer">browse &amp; download days 1–20</a>; <a href="expanded_social_graphics/mini_campaign_squares_exporter.html" target="_blank" rel="noopener noreferrer">generate days 21–30</a>.</p>
         <div class="tabs">
           <button class="tab active" data-week="all">All</button>
           <button class="tab" data-week="1">Week 1</button>
@@ -364,7 +374,7 @@
         <div class="asset-grid">
           <div class="asset"><h4>Lead Magnet</h4><p>Interrupt the Loop guide concept and funnel anchor.</p><span class="pill warn">Needs final PDF/link check</span></div>
           <div class="asset"><h4>Email Sequence</h4><p>5 standalone Outlook-safe HTML welcome emails.</p><span class="pill good">Ready</span></div>
-          <div class="asset"><h4>Social Graphics</h4><p>20 square PNGs + 20 story/reel PNGs.</p><span class="pill good">Ready</span></div>
+          <div class="asset"><h4>Social Graphics</h4><p>30 square PNGs (days 1–30) under expanded_social_graphics/square_1080/ · 20 story/reel PNGs for days 1–20.</p><p style="margin-top:8px"><a href="expanded_social_graphics/preview.html" target="_blank" rel="noopener noreferrer">Open 1–20 preview + downloads</a><br><a href="expanded_social_graphics/mini_campaign_squares_exporter.html" target="_blank" rel="noopener noreferrer">Open 21–30 square exporter</a></p><span class="pill warn">Finalize days 21–30 squares</span></div>
           <div class="asset"><h4>Email Signature</h4><p>Outlook-friendly Cindy Santi signature with guide and booking links.</p><span class="pill good">Ready</span></div>
           <div class="asset"><h4>30-Day Copy</h4><p>Daily captions, reels, story prompts, CTAs, and campaign structure.</p><span class="pill good">Ready</span></div>
           <div class="asset"><h4>Booking CTA</h4><p>Book Consultation link routes to cindysanti.com/#booking.</p><span class="pill warn">Verify live Square path + domain routing</span></div>
@@ -437,7 +447,7 @@
       <button class="btn soft" onclick="markCurrentPosted()">Mark Posted</button>
       <button class="btn" onclick="markCurrentNext()">Mark Next</button>
     </div>
-    <p class="image-note">Image buttons use relative web paths. For local testing, keep images in <span class="code-chip">post-images/</span> next to this HTML file. For GitHub Pages, upload the same folder.</p>
+    <p class="image-note">Square feeds resolve from <span class="code-chip">expanded_social_graphics/square_1080/</span> relative to this file. Vertical story/reel exports sit in whatever folder you use beside that pack — keep filenames aligned with squares for workflow (see <span class="code-chip">expanded_social_graphics/README.txt</span>). Missing files? <a href="expanded_social_graphics/preview.html" target="_blank" rel="noopener noreferrer">Days 1–20 preview + ZIP</a> · <a href="expanded_social_graphics/mini_campaign_squares_exporter.html" target="_blank" rel="noopener noreferrer">Days 21–30 exporter</a>.</p>
   </div>
 </div>
 <div class="copy-toast" id="toast">Copied</div>
@@ -447,7 +457,7 @@ const readyItems = [
   {id:"ready-guide", title:"Lead magnet funnel anchor", detail:"Free Guide: Interrupt the Loop is the core CTA for the campaign.", status:"Ready concept / verify delivery"},
   {id:"ready-emails", title:"5-email welcome sequence", detail:"Standalone Outlook-safe HTML files created for delivery, trust-building, and consultation CTA.", status:"Ready"},
   {id:"ready-signature", title:"Cindy Outlook signature", detail:"Professional signature with website, guide, and booking links.", status:"Ready"},
-  {id:"ready-graphics", title:"20 branded social graphics", detail:"Square and story/reel PNG versions created for the campaign.", status:"Ready"},
+  {id:"ready-graphics", title:"30 square + 20 story graphics", detail:"Squares mapped per day under expanded_social_graphics/square_1080/. Story/reel set covers days 1–20.", status:"Needs finalize: days 21–30 squares"},
   {id:"ready-calendar", title:"30-day organic posting cycle", detail:"Daily posts, reels, captions, CTAs, story prompts, and hashtags planned.", status:"Ready"},
   {id:"ready-week1", title:"Best first week", detail:"Day 1 launch, Day 2 carousel, Day 4 reel, Day 5 CTA.", status:"Post next"},
   {id:"ready-tracking", title:"Manual launch tracking", detail:"Track downloads, consultation clicks, bookings, and best-performing posts.", status:"Needs weekly update"},
@@ -461,7 +471,10 @@ const emails = [
   {id:"email-5", title:"Email 5 — When you are ready for space to reset", timing:"+7 days", purpose:"Invite consultation, coaching, workshops, and retreats.", status:"HTML ready"},
 ];
 
-const imageBasePath = "post-images/"; // Recommended repo folder for social graphics.
+const imageBasePath = "expanded_social_graphics/square_1080/";
+// Remove days from this set once matching PNGs exist in square_1080/ (calendar / Get Image unlocks automatically).
+const imagePendingExportDays = new Set([21,22,23,24,25,26,27,28,29,30]);
+
 const imageCatalog = {
   1:"01-you-are-not-broken.png",
   2:"02-3-signs-you-are-in-an-emotional-loop.png",
@@ -482,13 +495,25 @@ const imageCatalog = {
   17:"17-coaching-can-support.png",
   18:"18-you-are-allowed-to-outgrow-survival-mode.png",
   19:"19-insight-alone-may-not-be-enough.png",
-  20:"20-interrupt-the-loop.png"
+  20:"20-interrupt-the-loop.png",
+  21:"21-mini-reset-day-1-pause.png",
+  22:"22-name-the-loop.png",
+  23:"23-where-do-you-feel-this.png",
+  24:"24-what-am-i-trying-to-protect-mini.png",
+  25:"25-choose-one-honest-next-step-mini.png",
+  26:"26-four-grounded-responses-when-activated.png",
+  27:"27-naming-creates-choice.png",
+  28:"28-space-to-reset.png",
+  29:"29-gentle-and-honest.png",
+  30:"30-interrupt-the-loop-next-honest-step.png"
 };
 
 function getImageInfo(day){
-  const file = imageCatalog[Number(day)];
-  if(!file) return {exists:false, file:null, url:null};
-  return {exists:true, file:file, url:imageBasePath + file};
+  const d = Number(day);
+  const file = imageCatalog[d];
+  if(!file) return {exists:false, file:null, url:null, pending:false};
+  const pending = imagePendingExportDays.has(d);
+  return {exists:!pending, file:file, url:imageBasePath + file, pending:pending};
 }
 
 const posts = [
@@ -1045,9 +1070,10 @@ function renderCalendar(filter="all"){
     var img = getImageInfo(p.day);
     var statusClass = done ? "good" : (next ? "warn" : "");
     var statusText = done ? "Posted" : (next ? "Next" : p.type);
+    var pendTitle = (img.file && img.pending) ? "Export pending — open View for filename" : "No mapped filename";
     var imageButton = img.exists
       ? '<button class="mini-btn" onclick="downloadPostImage(' + p.day + ')">Get Image</button>'
-      : '<button class="mini-btn disabled" title="No mapped image yet">Need Image</button>';
+      : '<button class="mini-btn disabled" title="' + pendTitle.replace(/"/g, "&quot;") + '">Need Image</button>';
 
     return '<div class="day">' +
       '<div class="day-top"><span class="day-num">' + p.day + '</span><span class="pill ' + statusClass + '">' + statusText + '</span></div>' +
@@ -1124,8 +1150,10 @@ function openPost(day){
   if(img.exists){
     imageStatusHtml = 'Mapped to <span class="code-chip">' + escapeHtml(img.file) + '</span><br>' +
       '<button class="btn" style="margin-top:10px" onclick="downloadPostImage(' + p.day + ')">Get Image</button>';
+  } else if(img.file && img.pending){
+    imageStatusHtml = 'Target file <span class="code-chip">' + escapeHtml(img.file) + '</span> — export it into <span class="code-chip">expanded_social_graphics/square_1080/</span>, then remove day ' + p.day + ' from <span class="code-chip">imagePendingExportDays</span> in this HTML file.';
   } else {
-    imageStatusHtml = "Missing for this day. This is a good candidate to generate next.";
+    imageStatusHtml = "No filename mapped for this day.";
   }
 
   document.getElementById("modalBrief").innerHTML =
